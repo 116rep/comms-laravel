@@ -11,10 +11,12 @@
 
         <br>
 
-        <h2>Messages</h2>
-        @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
-            <p>{{ $message->user->name }}: {{ $message->content }}</p>
-        @endforeach
+        <div class="messages">
+            <h2>Messages</h2>
+            @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
+                <p><strong>{{  $message->user->name }}</strong>: {{ $message->content }}</p>
+            @endforeach
+        </div>
         <!-- Message Form -->
         <form action="/messages" method="POST">
             @csrf
