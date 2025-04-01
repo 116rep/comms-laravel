@@ -11,13 +11,27 @@ toggleButton.addEventListener("click", () => {
 const micSelect = document.getElementById("micSelect");
 let localStream;
 
-if (micSelect) {
-    navigator.mediaDevices
-        .enumerateDevices()
-        .then((devices) => {
-            const audioDevices = devices.filter(
-                (device) => device.kind === "audioinput",
-            );
+async function populateMicDropdown() {
+    const status = document.getElementById("micStatus");
+    try {
+        status.textContent = "Requesting microphone access...";
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+        });
+        localStream = stream;
+
+        status.textContent = "Loading devices...";
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioDevices = devices.filter(
+            (device) => device.kind === "audioinput",
+        );
+
+        micSelect.innerHTML = '<option value="">Select a microphone</option>';
+        if (audioDevices.length === 0) {
+            micSelect.innerHTML =
+                '<option value="">No microphones found</option>';
+            status.textContent = "No microphones detected.";
+        } else {
             audioDevices.forEach((device) => {
                 const option = document.createElement("option");
                 option.value = device.deviceId;
@@ -26,45 +40,78 @@ if (micSelect) {
                     `Microphone ${micSelect.options.length + 1}`;
                 micSelect.appendChild(option);
             });
-        })
-        .catch((err) => console.error("Error listing devices:", err));
+            status.textContent = "Microphones loaded successfully.";
+        }
+
+        stream.getTracks().forEach((track) => track.stop());
+    } catch (err) {
+        console.error("Error accessing microphones:", err.name, err.message);
+        micSelect.innerHTML =
+            '<option value="">Error: ' + err.message + "</option>";
+        status.textContent = "Error: " + err.message;
+    }
+}
+
+const loadMicsButton = document.getElementById("loadMics");
+if (loadMicsButton) {
+    loadMicsButton.addEventListener("click", populateMicDropdown);
 }
 
 // Voice Chat Logic
 const socket = io("http://localhost:3000");
-const joinButton = document.getElementById("joinVoiceChat");
+const voiceButton = document.getElementById("joinVoiceChat");
 const activeUsersDiv = document.getElementById("activeUsers");
 const peerConnections = {};
 const userId = "{{ Auth::id() }}";
 const userName = "{{ Auth::user()->name }}";
+let isInVoiceChat = false;
 
-joinButton?.addEventListener("click", async () => {
-    try {
-        const selectedMic = micSelect ? micSelect.value : null;
-        localStream = await navigator.mediaDevices.getUserMedia({
-            audio: selectedMic ? { deviceId: { exact: selectedMic } } : true,
-        });
-        addUserCircle(socket.id, userName);
+voiceButton.addEventListener("click", async () => {
+    if (!isInVoiceChat) {
+        // Join Voice Chat
+        try {
+            const selectedMic = micSelect ? micSelect.value : null;
+            localStream = await navigator.mediaDevices.getUserMedia({
+                audio: selectedMic
+                    ? { deviceId: { exact: selectedMic } }
+                    : true,
+            });
+            addUserCircle(socket.id, userName);
 
-        await fetch("/voice-chat/join", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]',
-                ).content,
-            },
-        });
+            await fetch("/voice-chat/join", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]',
+                    ).content,
+                },
+            });
 
-        socket.emit("join-voice-chat", { id: userId, name: userName });
-        joinButton.disabled = true;
-    } catch (err) {
-        console.error("Error accessing microphone:", err);
-        alert("Couldn’t access your microphone.");
+            socket.emit("join-voice-chat", { id: userId, name: userName });
+            voiceButton.textContent = "Leave Voice Chat";
+            isInVoiceChat = true;
+        } catch (err) {
+            console.error("Error joining voice chat:", err);
+            alert("Couldn’t access your microphone.");
+        }
+    } else {
+        // Leave Voice Chat
+        socket.emit("leave-voice-chat", { id: userId, name: userName });
+        if (localStream) {
+            localStream.getTracks().forEach((track) => track.stop());
+            localStream = null;
+        }
+        Object.values(peerConnections).forEach((pc) => pc.close());
+        Object.keys(peerConnections).forEach(
+            (id) => delete peerConnections[id],
+        );
+        activeUsersDiv.innerHTML = ""; // Clear user circles
+        voiceButton.textContent = "Join Voice Chat";
+        isInVoiceChat = false;
     }
 });
 
-// Handle current users
 socket.on("current-users", (users) => {
     users.forEach((user) => {
         if (user.id !== userId) {
@@ -74,7 +121,6 @@ socket.on("current-users", (users) => {
     });
 });
 
-// Handle new user joining
 socket.on("user-joined", (data) => {
     if (data.id !== userId) {
         addUserCircle(data.socketId, data.name);
@@ -82,7 +128,6 @@ socket.on("user-joined", (data) => {
     }
 });
 
-// Handle user leaving
 socket.on("user-left", (data) => {
     removeUserCircle(data.socketId);
     if (peerConnections[data.socketId]) {
@@ -91,7 +136,6 @@ socket.on("user-left", (data) => {
     }
 });
 
-// Add user circle to UI
 function addUserCircle(socketId, name) {
     if (!document.getElementById(`user-${socketId}`)) {
         const circle = document.createElement("div");
@@ -102,30 +146,25 @@ function addUserCircle(socketId, name) {
     }
 }
 
-// Remove user circle from UI
 function removeUserCircle(socketId) {
     const circle = document.getElementById(`user-${socketId}`);
     if (circle) circle.remove();
 }
 
-// Initiate WebRTC Peer Connection
 async function initiatePeerConnection(targetSocketId) {
     const pc = new RTCPeerConnection({
         iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
     peerConnections[targetSocketId] = pc;
 
-    // Add local audio stream
     localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
 
-    // Handle incoming audio
     pc.ontrack = (event) => {
         const audio = new Audio();
         audio.srcObject = event.streams[0];
         audio.autoplay = true;
     };
 
-    // Exchange ICE candidates
     pc.onicecandidate = (event) => {
         if (event.candidate) {
             socket.emit("ice-candidate", {
@@ -135,12 +174,10 @@ async function initiatePeerConnection(targetSocketId) {
         }
     };
 
-    // Create and send offer
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
     socket.emit("offer", { to: targetSocketId, offer });
 
-    // Handle incoming offer
     socket.on("offer", async (data) => {
         if (!pc.remoteDescription) {
             await pc.setRemoteDescription(
@@ -152,14 +189,12 @@ async function initiatePeerConnection(targetSocketId) {
         }
     });
 
-    // Handle incoming answer
     socket.on("answer", (data) => {
         if (data.from === targetSocketId) {
             pc.setRemoteDescription(new RTCSessionDescription(data.answer));
         }
     });
 
-    // Handle ICE candidates
     socket.on("ice-candidate", (data) => {
         if (data.to === socket.id) {
             pc.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -167,9 +202,10 @@ async function initiatePeerConnection(targetSocketId) {
     });
 }
 
-// Clean up on page unload
 window.addEventListener("beforeunload", () => {
-    if (localStream) {
-        localStream.getTracks().forEach((track) => track.stop());
+    if (isInVoiceChat) {
+        socket.emit("leave-voice-chat", { id: userId, name: userName });
+        if (localStream)
+            localStream.getTracks().forEach((track) => track.stop());
     }
 });

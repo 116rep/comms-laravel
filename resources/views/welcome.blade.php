@@ -18,8 +18,8 @@
             <div class="main-content">
                 <button id="toggleSidebar" class="toggle-button">☰</button>
                 <div class="container">
-                    <h1>Welcome to My Site</h1>
-                    <p>This is styled with Rosé Pine colors.</p>
+                    <h1>Welcome to Comms</h1>
+                    <p>Be nice and have fun</p>
 
                     <!-- Voice Chat Section -->
                     <div class="voice-chat">

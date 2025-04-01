@@ -10,7 +10,7 @@ class VoiceChatController extends Controller
 {
     public function join(Request $request)
     {
-        event(new VoiceChatEvent(Auth::id(), 'joined'));
-        return response()->json(['status' => 'success']);
+        event(new VoiceChatEvent(Auth::id(), "joined"));
+        return response()->json(["status" => "success"]);
     }
-}}
+}
