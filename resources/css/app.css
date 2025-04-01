@@ -1,11 +1,78 @@
-@import 'tailwindcss';
+/* Reset default margins and set base font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+body {
+    background-color: #191724; /* Base */
+    color: #e0def4; /* Text */
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Headings */
+h1,
+h2,
+h3 {
+    color: #ebbcba; /* Rose */
+}
+
+/* Links */
+a {
+    color: #9ccfd8; /* Foam */
+    text-decoration: none;
+}
+a:hover {
+    color: #c4a7e7; /* Iris */
+    text-decoration: underline;
+}
+
+/* Paragraphs */
+p {
+    color: #908caa; /* Subtle */
+}
+
+/* Buttons */
+button {
+    background-color: #31748f; /* Pine */
+    color: #e0def4; /* Text */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background-color: #f6c177; /* Gold */
+}
+
+/* Lists */
+ul {
+    list-style: none;
+}
+li {
+    padding: 5px 0;
+    color: #6e6a86; /* Muted */
+}
+
+/* Container for content */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #1f1d2e; /* Surface */
+    border-radius: 8px;
+}
+textarea {
+    background-color: #1f1d2e; /* Surface */
+    color: #e0def4; /* Text */
+    border: 1px solid #26233a; /* Overlay */
+    padding: 10px;
+    font-size: 16px;
+    resize: vertical; /* Allows vertical resizing only */
+}
+textarea:focus {
+    border-color: #31748f; /* Pine accent on focus */
+    outline: none;
 }
