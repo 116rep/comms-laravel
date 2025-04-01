@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Rosé Pine Site</title>
+    <title>Comms</title>
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
-            window.authUser = {
-                id: {{ Auth::id() ?? 'null' }},
-                name: "{{ Auth::user()->name ?? 'Anonymous' }}"
-            };
+        window.authUser = {
+            id: {{ Auth::id() ?? 'null' }},
+            name: "{{ Auth::user()->name ?? 'Anonymous' }}"
+        };
     </script>
 </head>
 <body>
