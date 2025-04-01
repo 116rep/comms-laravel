@@ -120,9 +120,15 @@ label {
 }
 .active-users {
     display: flex;
-    gap: 10px;
+    gap: 15px; /* Space between users */
     margin-top: 10px;
-    text-align: center;
+    justify-content: center; /* Keep centered */
+    flex-wrap: wrap; /* Wrap to new line if needed */
+}
+.user-container {
+    display: flex;
+    align-items: center; /* Vertically align circle and name */
+    gap: 8px; /* Space between circle and name */
 }
 .user-circle {
     width: 30px;

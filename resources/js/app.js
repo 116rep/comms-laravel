@@ -74,8 +74,8 @@ const socket = io("http://localhost:3000");
 const voiceButton = document.getElementById("joinVoiceChat");
 const activeUsersDiv = document.getElementById("activeUsers");
 const peerConnections = {};
-const userId = "{{ Auth::id() }}";
-const userName = "{{ Auth::user()->name }}";
+const userId = window.authUser.id;
+const userName = window.authUser.name;
 let isInVoiceChat = false;
 
 voiceButton.addEventListener("click", async () => {
