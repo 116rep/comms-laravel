@@ -12,8 +12,8 @@
         <br>
 
         <h2>Messages</h2>
-        @foreach (\App\Models\Message::all() as $msg)
-            <p>{{ $msg->content }}</p>
+        @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
+            <p>{{ $message->user->name }}: {{ $message->content }}</p>
         @endforeach
         <!-- Message Form -->
         <form action="/messages" method="POST">
