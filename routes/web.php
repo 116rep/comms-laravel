@@ -20,3 +20,6 @@ Route::post("/login", [AuthController::class, "login"]);
 Route::post("/messages", [MessageController::class, "store"])->middleware(
     "auth"
 );
+Route::get("/settings", function () {
+    return view("settings");
+})->middleware("auth");

@@ -131,3 +131,93 @@ label {
     color: #908caa;
     font-size: 14px;
 }
+
+/* Wrapper for sidebar and content */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #1f1d2e; /* Surface */
+    color: #e0def4; /* Text */
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: -250px; /* Hidden by default */
+    height: 100%;
+    transition: left 0.3s ease;
+}
+
+.sidebar.active {
+    left: 0; /* Visible when toggled */
+}
+
+.sidebar h2 {
+    color: #ebbcba; /* Rose */
+    margin-bottom: 20px;
+}
+
+.sidebar-item {
+    display: block;
+    color: #9ccfd8; /* Foam */
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.sidebar-item:hover {
+    background-color: #26233a; /* Overlay */
+    color: #c4a7e7; /* Iris */
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #191724; /* Base */
+}
+
+/* Toggle Button */
+.toggle-button {
+    background-color: #31748f; /* Pine */
+    color: #e0def4;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 5px;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.toggle-button:hover {
+    background-color: #f6c177; /* Gold */
+}
+
+.mic-dropdown {
+    background-color: #1f1d2e;
+    color: #e0def4;
+    border: 1px solid #26233a;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.mic-dropdown:focus {
+    border-color: #31748f;
+    outline: none;
+}
+
+.back-link {
+    color: #9ccfd8;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #c4a7e7;
+}

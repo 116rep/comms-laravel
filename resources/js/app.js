@@ -1,22 +1,51 @@
 import io from "socket.io-client";
 
-const socket = io("http://localhost:3000"); // Connect to Node.js server
+// Sidebar Toggle
+const toggleButton = document.getElementById("toggleSidebar");
+const sidebar = document.getElementById("sidebar");
+toggleButton.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+});
+
+// Microphone Selection
+const micSelect = document.getElementById("micSelect");
+let localStream;
+
+if (micSelect) {
+    navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+            const audioDevices = devices.filter(
+                (device) => device.kind === "audioinput",
+            );
+            audioDevices.forEach((device) => {
+                const option = document.createElement("option");
+                option.value = device.deviceId;
+                option.text =
+                    device.label ||
+                    `Microphone ${micSelect.options.length + 1}`;
+                micSelect.appendChild(option);
+            });
+        })
+        .catch((err) => console.error("Error listing devices:", err));
+}
+
+// Voice Chat Logic
+const socket = io("http://localhost:3000");
 const joinButton = document.getElementById("joinVoiceChat");
 const activeUsersDiv = document.getElementById("activeUsers");
-let localStream;
 const peerConnections = {};
-const userId = "{{ Auth::id() }}"; // Laravel Blade for user ID
-const userName = "{{ Auth::user()->name }}"; // Authenticated user's name
+const userId = "{{ Auth::id() }}";
+const userName = "{{ Auth::user()->name }}";
 
-// Join Voice Chat
-joinButton.addEventListener("click", async () => {
+joinButton?.addEventListener("click", async () => {
     try {
+        const selectedMic = micSelect ? micSelect.value : null;
         localStream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
+            audio: selectedMic ? { deviceId: { exact: selectedMic } } : true,
         });
         addUserCircle(socket.id, userName);
 
-        // Notify Laravel of join
         await fetch("/voice-chat/join", {
             method: "POST",
             headers: {
