@@ -96,3 +96,38 @@ label {
 .error {
     color: #eb6f92; /* Love */
 }
+
+.voice-chat {
+    margin: 20px 0;
+}
+.voice-button {
+    background-color: #31748f;
+    color: #e0def4;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.voice-button:hover {
+    background-color: #f6c177;
+}
+.active-users {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.user-circle {
+    width: 30px;
+    height: 30px;
+    background-color: #ebbcba;
+    color: #191724;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+.voice-chat p {
+    color: #908caa;
+    font-size: 14px;
+}

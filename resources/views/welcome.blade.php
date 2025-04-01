@@ -3,6 +3,8 @@
 <head>
     <title>My Rosé Pine Site</title>
     @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div class="container">
@@ -10,6 +12,14 @@
         <p>I hope you enjoy it</p>
 
         <br>
+        <div class="voice-chat">
+            <button id="joinVoiceChat" class="voice-button">Join Voice Chat</button>
+            <div id="activeUsers" class="active-users"></div>
+            <h2>Voice Chat Activity</h2>
+            @foreach (\App\Models\VoiceChatEvent::with('user')->latest()->take(5)->get() as $event)
+                <p>{{ $event->user->name }} {{ $event->action }} voice chat at {{ $event->created_at->diffForHumans() }}</p>
+            @endforeach
+        </div>
 
         <div class="messages">
             <h2>Messages</h2>
