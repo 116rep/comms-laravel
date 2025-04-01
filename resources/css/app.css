@@ -76,3 +76,23 @@ textarea:focus {
     border-color: #31748f; /* Pine accent on focus */
     outline: none;
 }
+input {
+    background-color: #1f1d2e; /* Surface */
+    color: #e0def4; /* Text */
+    border: 1px solid #26233a; /* Overlay */
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 5px;
+}
+input:focus {
+    border-color: #31748f; /* Pine */
+    outline: none;
+}
+label {
+    color: #908caa; /* Subtle */
+}
+.error {
+    color: #eb6f92; /* Love */
+}
