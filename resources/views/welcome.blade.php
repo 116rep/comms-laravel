@@ -23,14 +23,22 @@
 
                     <!-- Voice Chat Section -->
                     <div class="voice-chat">
-                        <button id="joinVoiceChat" class="voice-button">Join Voice Chat</button>
                         <div id="activeUsers" class="active-users"></div>
+                        <br>
+                        <button id="joinVoiceChat" class="voice-button">Join Voice Chat</button>
                         <h2>Voice Chat Activity</h2>
                         @foreach (\App\Models\VoiceChatEvent::with('user')->latest()->take(5)->get() as $event)
                             <p>{{ $event->user->name }} {{ $event->action }} voice chat at {{ $event->created_at->diffForHumans() }}</p>
                         @endforeach
                     </div>
-
+                    <!-- Display Messages -->
+                    <div class="messages">
+                        <h2>Messages</h2>
+                        @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
+                            <p><strong>{{ $message->user ? $message->user->name : 'Anonymous' }}</strong>: {{ $message->content }}</p>
+                        @endforeach
+                    </div>
+                    <br>
                     <!-- Message Form -->
                     <form action="/messages" method="POST">
                         @csrf
@@ -39,13 +47,6 @@
                         <button type="submit">Send Message</button>
                     </form>
 
-                    <!-- Display Messages -->
-                    <div class="messages">
-                        <h2>Messages</h2>
-                        @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
-                            <p><strong>{{ $message->user ? $message->user->name : 'Anonymous' }}</strong>: {{ $message->content }}</p>
-                        @endforeach
-                    </div>
 
                     <!-- Logout -->
                     <form action="/logout" method="POST">
