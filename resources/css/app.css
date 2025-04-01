@@ -63,7 +63,14 @@ li {
     padding: 20px;
     background-color: #1f1d2e; /* Surface */
     border-radius: 8px;
+    text-align: center;
 }
+/* Ensure other content isn’t overly affected */
+.container form,
+.container .messages {
+    text-align: left; /* Reset to left-align other elements */
+}
+
 textarea {
     background-color: #1f1d2e; /* Surface */
     color: #e0def4; /* Text */
@@ -115,6 +122,7 @@ label {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    text-align: center;
 }
 .user-circle {
     width: 30px;

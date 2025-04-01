@@ -12,6 +12,11 @@
             <div id="sidebar" class="sidebar">
                 <h2>Menu</h2>
                 <a href="/settings" class="sidebar-item">Settings</a>
+                <!-- Logout -->
+                <form action="/logout" method="POST">
+                    @csrf
+                    <button type="submit">Logout</button>
+                </form>
             </div>
 
             <!-- Main Content -->
@@ -34,25 +39,21 @@
                     <!-- Display Messages -->
                     <div class="messages">
                         <h2>Messages</h2>
-                        @foreach (\App\Models\Message::with('user')->latest()->get() as $message)
+                        @foreach (\App\Models\Message::with('user')->oldest()->get() as $message)
                             <p><strong>{{ $message->user ? $message->user->name : 'Anonymous' }}</strong>: {{ $message->content }}</p>
                         @endforeach
                     </div>
                     <br>
                     <!-- Message Form -->
-                    <form action="/messages" method="POST">
+                    <form id="messageForm" action="/messages" method="POST">
                         @csrf
-                        <textarea name="message" placeholder="Type your message here..." rows="4" cols="50"></textarea>
+                        <textarea id="messageTextarea" name="message" placeholder="Type your message here..." rows="4" cols="50"></textarea>
                         <br>
                         <button type="submit">Send Message</button>
                     </form>
 
 
-                    <!-- Logout -->
-                    <form action="/logout" method="POST">
-                        @csrf
-                        <button type="submit">Logout</button>
-                    </form>
+
                 </div>
             </div>
         </div>

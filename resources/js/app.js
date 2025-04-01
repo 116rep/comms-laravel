@@ -7,6 +7,18 @@ toggleButton.addEventListener("click", () => {
     sidebar.classList.toggle("active");
 });
 
+// Message Form Submission with Enter
+const messageForm = document.getElementById("messageForm");
+const messageTextarea = document.getElementById("messageTextarea");
+if (messageForm && messageTextarea) {
+    messageTextarea.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // Prevent newline
+            messageForm.submit(); // Submit the form
+        }
+    });
+}
+
 // Microphone Selection
 const micSelect = document.getElementById("micSelect");
 let localStream;
